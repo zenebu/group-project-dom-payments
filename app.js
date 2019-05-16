@@ -36,7 +36,7 @@
 var account = {
   number: 100402153,
   initialBalance: 100,
-  paymentsUrl: '/data/payments.json',
+  paymentsUrl: "/data/payments.json",
   payments: []
 };
 
@@ -48,15 +48,17 @@ var account = {
  *
  * You may edit this code.
  */
-document.querySelector('#loadButton')
-  .addEventListener('click', function () {
-    fetch(account.paymentsUrl)
-      .then(response => response.json())
-      .then(payments => {
-        account.payments = payments;
-        render(account);
-      });
-  });
+document.querySelector("#loadButton").addEventListener("click", function() {
+  fetch(account.paymentsUrl)
+    .then(response => response.json())
+    .then(payments => {
+      account.payments = payments;
+      console.log(payments);
+      render(account);
+      showCurrentBalance(payments);
+      addPayments(payments);
+    });
+});
 
 /**
  * Write a render function below that updates the DOM with the
@@ -72,11 +74,9 @@ document.querySelector('#loadButton')
  * @param {Object} account The account details
  */
 function render(account) {
-
   // Display the account number
-  document.querySelector('#accountNumber')
-    .innerText = account.number;
-};
+  document.querySelector("#accountNumber").innerText = account.number;
+}
 
 /**
  * Write any additional functions that you need to complete
@@ -86,3 +86,40 @@ function render(account) {
  * calculate balances, find completed or pending payments,
  * add up payments, and more.
  */
+
+//             TASK 1
+function showCurrentBalance(payments) {
+  var sumOfAllCompletedPayments = payments
+    .filter(payment => payment.completed)
+    .map(payment => payment.amount)
+    .reduce((amount1, amount2) => amount1 + amount2);
+
+  var currentBalance = account.initialBalance + sumOfAllCompletedPayments;
+  document.querySelector("#balanceAmount").textContent =
+    "£" + currentBalance.toFixed(2);
+}
+//         TASK 2
+function addPayments(payments) {
+  var tableBody = document.querySelector("#paymentsList");
+  payments.forEach(payment => {
+    var tableLine = document.createElement("tr");
+    createACellInATable(tableLine, "date", payment);
+    var statusCell = document.createElement("td");
+    if (payment.completed) {
+      statusCell.textContent = "Completed";
+    } else {
+      statusCell.textContent = "Pending";
+      tableLine.setAttribute("class", "pending");
+    }
+    tableLine.appendChild(statusCell);
+    createACellInATable(tableLine, "description", payment);
+    createACellInATable(tableLine, "amount", payment);
+    tableBody.appendChild(tableLine);
+  });
+}
+
+function createACellInATable(tableLine, nameOfCell, payment) {
+  var newCell = document.createElement("td");
+  newCell.textContent = payment[nameOfCell];
+  tableLine.appendChild(newCell);
+}
