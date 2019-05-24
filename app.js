@@ -51,6 +51,7 @@ var account = {
 
 
 
+
 document.querySelector('#loadButton')
   .addEventListener('click', function () {
     fetch(account.paymentsUrl)
@@ -77,11 +78,14 @@ document.querySelector('#loadButton')
  * @param {Object} account The account details
  */
 
+
 function render(account) {
   // Display the account number
   document.querySelector("#accountNumber").innerText = account.number;
   createPaymentList(account);
   createCancelbutton(account);
+   totalIncomMay(account.payments);
+  maxPaymentinMay(account.payments);
     payBal(account);
     pendPay(account);
   
@@ -174,4 +178,29 @@ function createCancelbutton(account) {
       render(account);
     });
   });
+//      TASK 4
+function totalIncomMay(payments) {
+  var paymentsInMay = payments
+    .filter(isInMay)
+    .reduce((accumulator, payment) => accumulator + payment.amount, 0);
+  document.querySelector("#totalIncome").textContent =
+    "£" + paymentsInMay.toFixed(2);
+}
+
+function isInMay(payment) {
+  var d = new Date(Date.parse(payment.date));
+  if (d.getMonth() === 4) {
+    return payment;
+  }
+}
+
+//      TASK 5
+function maxPaymentinMay(payments) {
+  var completedPaymentsInMay = payments
+    .filter(isInMay)
+    .filter(payment => payment.completed)
+    .map(payment => payment.amount);
+  document.querySelector("#mostValuablePayment").textContent =
+    "£" + Math.max(...completedPaymentsInMay).toFixed(2);
+
 }
