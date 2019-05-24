@@ -173,6 +173,7 @@ function table (account) {
      var cancelBtn = document.createElement ("button");
      cancelBtn.innerText = "Cancel";
      cellAction.appendChild(cancelBtn);
+     
      row.appendChild (cellAction);
 
      // Question 6 // 
