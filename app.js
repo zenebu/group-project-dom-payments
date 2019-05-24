@@ -53,7 +53,7 @@ document.querySelector('#loadButton')
     fetch(account.paymentsUrl)
       .then(response => response.json())
       .then(payments => {
-        console.log(payments);
+       
         account.payments = payments;
         render(account);
       });
@@ -79,15 +79,21 @@ function render(account) {
   document.querySelector('#accountNumber')
     .innerText = account.number;
 
-    // document.querySelector('#balanceAmount')
-    // .innerText = account.initialBalance;
-    // console.log(account);
-
+  
     payBal(account);
-    table(account);
     pendPay(account);
-    allIncome(account);
-    mostVal(account);
+  
+
+    function payBal (account) {
+
+  var completedPay =  account.payments.filter(payment => payment.completed).map(payment => payment.amount)
+  .reduce((accumulator, currentValue) => accumulator + currentValue );
+
+  var Bal = account.initialBalance + completedPay ;
+  document.querySelector('#balanceAmount')
+  .innerText = "£" + Bal.toFixed(2);
+
+  };
 
 // Question 3 // 
     function pendPay(account) {
@@ -96,105 +102,11 @@ function render(account) {
       .reduce((accumulator, currentValue) => accumulator + currentValue);
   
       var totalPay = account.initialBalance + pendPaySum ;
-      console.log(totalPay);
       document.querySelector ('#pendingBalance').innerText = "£" + totalPay.toFixed(2);
        
     };
 
-// Question 4 // 
-  function allIncome (account) {
-    document.querySelector ('#totalIncome');
-    var allIn = pendPaySum.innerText = '£' + allIn.toFixed(2);
-    // account.payments.map(payment => payment.amount)
-    // .reduce((accumulator, currentValue) => accumulator + currentValue);
-   //  allIn.
-  }
-// Question 5 //
-  function mostVal (account) {
-    document.querySelector ('#mostValuablePayment');
-    var mostValuablePayment = account.paymnets.map(payment => payment.amount)
-        if ( mostValuablePayment > 100 ) {
-      return mostValuablePayment;
-    }
-    else {
-      return "";
-    }
-   
-  };
-
-
 };
-// Question 2 // 
-function payBal (account) {
-
-  var completedPay =  account.payments.filter(payment => payment.completed).map(payment => payment.amount)
-  .reduce((accumulator, currentValue) => accumulator + currentValue );
-  console.log(completedPay);
-
-  var Bal = account.initialBalance + completedPay ;
-  document.querySelector('#balanceAmount')
-  .innerText = "£" + Bal.toFixed(2);
-
-  console.log (Bal);
-  };
-
-function table (account) {
-  document.querySelector("#paymentsList").innerHTML = "";
-  account.payments.forEach(payment => {
-    var row = document.createElement("tr");
-    // row.setAttribute("id", "paymentsList");
-    document.getElementById("paymentsList").appendChild(row);
-     var cellDate = document.createElement("td");
-     cellDate.innerText = payment.date ; 
-    row.appendChild(cellDate);
-    
-    var cellStatus = document.createElement("td");
-    if ( payment.completed ) {
-      cellStatus.innerText = "completed";
-    }
-    else {
-      cellStatus.innerText =  "Pending" ;
-      row.setAttribute("class", "pending");
-    }
-    row.appendChild (cellStatus);
-
-    var cellDescription = document.createElement("td");
-    cellDescription.innerText = payment.description ;
-    row.appendChild(cellDescription);
-
-    var cellAmount = document.createElement("td");
-    cellAmount.innerText = payment.amount ;
-    row.appendChild(cellAmount);
-
-    var cellAction = document.createElement ("td");
-    if (payment.completed) {
-      cellAction.innerText = "" ;
-    } else {
-     var cancelBtn = document.createElement ("button");
-     cancelBtn.innerText = "Cancel";
-     cellAction.appendChild(cancelBtn);
-     
-     row.appendChild (cellAction);
-
-     // Question 6 // 
-
-     cancelBtn.addEventListener("click", cancelPay);
-
-     function cancelPay (){
-       if (payment.completed != 'true') {
-        delete account.payments.completed ; 
-     }
-
-     render(account);
-    });
-
-  };
-
-  
- 
-};
-
-
 
 
 
