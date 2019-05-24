@@ -53,11 +53,12 @@ document.querySelector('#loadButton')
     fetch(account.paymentsUrl)
       .then(response => response.json())
       .then(payments => {
+       
         account.payments = payments;
         render(account);
       });
   });
-
+  
 /**
  * Write a render function below that updates the DOM with the
  * account details.
@@ -71,12 +72,43 @@ document.querySelector('#loadButton')
  *
  * @param {Object} account The account details
  */
-function render(account) {
 
+// Question 1 // 
+function render(account) {
   // Display the account number
   document.querySelector('#accountNumber')
     .innerText = account.number;
+
+  
+    payBal(account);
+    pendPay(account);
+  
+
+    function payBal (account) {
+
+  var completedPay =  account.payments.filter(payment => payment.completed).map(payment => payment.amount)
+  .reduce((accumulator, currentValue) => accumulator + currentValue );
+
+  var Bal = account.initialBalance + completedPay ;
+  document.querySelector('#balanceAmount')
+  .innerText = "£" + Bal.toFixed(2);
+
+  };
+
+// Question 3 // 
+    function pendPay(account) {
+  
+      var pendPaySum = account.payments.map(payment => payment.amount)
+      .reduce((accumulator, currentValue) => accumulator + currentValue);
+  
+      var totalPay = account.initialBalance + pendPaySum ;
+      document.querySelector ('#pendingBalance').innerText = "£" + totalPay.toFixed(2);
+       
+    };
+
 };
+
+
 
 /**
  * Write any additional functions that you need to complete
