@@ -36,7 +36,7 @@
 var account = {
   number: 100402153,
   initialBalance: 100,
-  paymentsUrl: '/data/payments.json',
+  paymentsUrl: "/data/payments.json",
   payments: []
 };
 
@@ -48,15 +48,14 @@ var account = {
  *
  * You may edit this code.
  */
-document.querySelector('#loadButton')
-  .addEventListener('click', function () {
-    fetch(account.paymentsUrl)
-      .then(response => response.json())
-      .then(payments => {
-        account.payments = payments;
-        render(account);
-      });
-  });
+document.querySelector("#loadButton").addEventListener("click", function() {
+  fetch(account.paymentsUrl)
+    .then(response => response.json())
+    .then(payments => {
+      account.payments = payments;
+      render(account);
+    });
+});
 
 /**
  * Write a render function below that updates the DOM with the
@@ -72,17 +71,36 @@ document.querySelector('#loadButton')
  * @param {Object} account The account details
  */
 function render(account) {
-
   // Display the account number
-  document.querySelector('#accountNumber')
-    .innerText = account.number;
-};
+  document.querySelector("#accountNumber").innerText = account.number;
+  // show current balance
 
-/**
- * Write any additional functions that you need to complete
- * the group project in the space below.
- *
- * For example, you might want to have functions that
- * calculate balances, find completed or pending payments,
- * add up payments, and more.
- */
+  totalIncomMay(account.payments);
+  maxPaymentinMay(account.payments);
+}
+
+//      TASK 4
+function totalIncomMay(payments) {
+  var paymentsInMay = payments
+    .filter(isInMay)
+    .reduce((accumulator, payment) => accumulator + payment.amount, 0);
+  document.querySelector("#totalIncome").textContent =
+    "£" + paymentsInMay.toFixed(2);
+}
+
+function isInMay(payment) {
+  var d = new Date(Date.parse(payment.date));
+  if (d.getMonth() === 4) {
+    return payment;
+  }
+}
+
+//      TASK 5
+function maxPaymentinMay(payments) {
+  var completedPaymentsInMay = payments
+    .filter(isInMay)
+    .filter(payment => payment.completed)
+    .map(payment => payment.amount);
+  document.querySelector("#mostValuablePayment").textContent =
+    "£" + Math.max(...completedPaymentsInMay).toFixed(2);
+}
