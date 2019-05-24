@@ -48,14 +48,21 @@ var account = {
  *
  * You may edit this code.
  */
-document.querySelector("#loadButton").addEventListener("click", function() {
-  fetch(account.paymentsUrl)
-    .then(response => response.json())
-    .then(payments => {
-      account.payments = payments;
-      render(account);
-    });
-});
+
+
+
+
+document.querySelector('#loadButton')
+  .addEventListener('click', function () {
+    fetch(account.paymentsUrl)
+      .then(response => response.json())
+      .then(payments => {
+       
+        account.payments = payments;
+        render(account);
+      });
+  });
+  
 
 /**
  * Write a render function below that updates the DOM with the
@@ -70,15 +77,107 @@ document.querySelector("#loadButton").addEventListener("click", function() {
  *
  * @param {Object} account The account details
  */
+
+
 function render(account) {
   // Display the account number
   document.querySelector("#accountNumber").innerText = account.number;
-  // show current balance
-
-  totalIncomMay(account.payments);
+  createPaymentList(account);
+  createCancelbutton(account);
+   totalIncomMay(account.payments);
   maxPaymentinMay(account.payments);
+    payBal(account);
+    pendPay(account);
+  
+
+    function payBal (account) {
+
+  var completedPay =  account.payments.filter(payment => payment.completed).map(payment => payment.amount)
+  .reduce((accumulator, currentValue) => accumulator + currentValue );
+
+  var Bal = account.initialBalance + completedPay ;
+  document.querySelector('#balanceAmount')
+  .innerText = "£" + Bal.toFixed(2);
+
+  };
+
+// Question 3 // 
+    function pendPay(account) {
+  
+      var pendPaySum = account.payments.map(payment => payment.amount)
+      .reduce((accumulator, currentValue) => accumulator + currentValue);
+  
+      var totalPay = account.initialBalance + pendPaySum ;
+      document.querySelector ('#pendingBalance').innerText = "£" + totalPay.toFixed(2);
+       
+    };
+
+};
+
+
+
+/**
+ * Write any additional functions that you need to complete
+ * the group project in the space below.
+ *
+ * For example, you might want to have functions that
+ * calculate balances, find completed or pending payments,
+ * add up payments, and more.
+ */
+
+// task 2
+console.log(paymentsList);
+function createPaymentList(account) {
+  var paymentsList = document.querySelector("#paymentsList");
+  paymentsList.innerHTML = "";
+  account.payments.forEach(function(payment) {
+    var tableRow = document.createElement("tr");
+    tableRow.setAttribute("id", account.payments.indexOf(payment).toString());
+    var dateCell = document.createElement("td");
+    dateCell.textContent = payment.date;
+    tableRow.appendChild(dateCell);
+    paymentsList.appendChild(tableRow);
+
+    var status = document.createElement("td");
+    //status.textContent = payment.completed;
+    if (payment.completed) {
+      status.innerText = "completed";
+    } else {
+      status.innerText = "pending";
+      tableRow.setAttribute("class", "pending");
+    }
+    tableRow.appendChild(status);
+
+    var description = document.createElement("td");
+    description.textContent = payment.description;
+    tableRow.appendChild(description);
+
+    var amount = document.createElement("td");
+    amount.textContent = "£" + payment.amount.toFixed(2);
+    tableRow.appendChild(amount);
+  });
 }
 
+// task 6
+function createCancelbutton(account) {
+  var allPendingPayment = document.querySelectorAll(".pending");
+  allPendingPayment.forEach(function(payment) {
+    var button = document.createElement("td");
+    var cancelButton = document.createElement("button");
+    cancelButton.innerText = "cancel";
+    button.appendChild(cancelButton);
+    payment.appendChild(button);
+  });
+  var allButton = document.querySelectorAll(".pending button");
+  console.log(allButton);
+  allButton.forEach(function(button) {
+    button.addEventListener("click", function(event) {
+      var rowToBeDeleted = event.target.parentElement.parentElement;
+      var indexOfObjectToBeDelated = rowToBeDeleted.getAttribute("id");
+      account.payments.splice(indexOfObjectToBeDelated, 1);
+      render(account);
+    });
+  });
 //      TASK 4
 function totalIncomMay(payments) {
   var paymentsInMay = payments
@@ -103,4 +202,5 @@ function maxPaymentinMay(payments) {
     .map(payment => payment.amount);
   document.querySelector("#mostValuablePayment").textContent =
     "£" + Math.max(...completedPaymentsInMay).toFixed(2);
+
 }
