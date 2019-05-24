@@ -48,16 +48,20 @@ var account = {
  *
  * You may edit this code.
  */
-document.querySelector("#loadButton").addEventListener("click", function() {
-  fetch(account.paymentsUrl)
-    .then(response => response.json())
-    .then(payments => {
-      //console.log(account);
-      account.payments = payments;
-      //console.log(account);
-      render(account);
-    });
-});
+
+
+
+document.querySelector('#loadButton')
+  .addEventListener('click', function () {
+    fetch(account.paymentsUrl)
+      .then(response => response.json())
+      .then(payments => {
+       
+        account.payments = payments;
+        render(account);
+      });
+  });
+  
 
 /**
  * Write a render function below that updates the DOM with the
@@ -72,12 +76,41 @@ document.querySelector("#loadButton").addEventListener("click", function() {
  *
  * @param {Object} account The account details
  */
+
 function render(account) {
   // Display the account number
   document.querySelector("#accountNumber").innerText = account.number;
   createPaymentList(account);
   createCancelbutton(account);
-}
+    payBal(account);
+    pendPay(account);
+  
+
+    function payBal (account) {
+
+  var completedPay =  account.payments.filter(payment => payment.completed).map(payment => payment.amount)
+  .reduce((accumulator, currentValue) => accumulator + currentValue );
+
+  var Bal = account.initialBalance + completedPay ;
+  document.querySelector('#balanceAmount')
+  .innerText = "£" + Bal.toFixed(2);
+
+  };
+
+// Question 3 // 
+    function pendPay(account) {
+  
+      var pendPaySum = account.payments.map(payment => payment.amount)
+      .reduce((accumulator, currentValue) => accumulator + currentValue);
+  
+      var totalPay = account.initialBalance + pendPaySum ;
+      document.querySelector ('#pendingBalance').innerText = "£" + totalPay.toFixed(2);
+       
+    };
+
+};
+
+
 
 /**
  * Write any additional functions that you need to complete
